@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 600px;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background-color: #f3f4f6;
+            color: var(--text);
+            border: 2px solid #e5e7eb;
+            text-align: left;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #eeefef;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #e0e7ff;
+            color: var(--primary);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .menu-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. IDENTITAS SISWA -->
+        <div id="section-identity">
+            <h1>Media Pembelajaran Interaktif</h1>
+            <p style="text-align: center;">Silakan isi identitas Anda terlebih dahulu.</p>
+            <form id="identity-form">
+                <div class="form-group">
+                    <label for="student-name">Nama Lengkap</label>
+                    <input type="text" id="student-name" required placeholder="Masukkan nama Anda">
+                </div>
+                <div class="form-group">
+                    <label for="student-class">Kelas</label>
+                    <input type="text" id="student-class" required placeholder="Contoh: X IPA 1">
+                </div>
+                <button type="submit">Lanjutkan ke Menu Utama</button>
+            </form>
+        </div>
+
+        <!-- 2. MENU UTAMA -->
+        <div id="section-menu" class="hidden">
+            <h2>Menu Utama</h2>
+            <p style="text-align: center;">Pilih mode latihan atau permainan:</p>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startQuiz('Berlatih')">
+                    <h3> Berlatih</h3>
+                    <p>Latihan soal mandiri</p>
+                </div>
+                <div class="menu-card" onclick="startQuiz('Bermain')">
+                    <h3> Bermain</h3>
+                    <p>Kuis interaktif</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. INTERFASE SOAL -->
+        <div id="section-quiz" class="hidden">
+            <div class="quiz-header">
+                <span id="quiz-mode-title">Mode</span>
+                <span id="question-progress">Soal 1/5</span>
+            </div>
+            <div id="question-text" style="font-size: 18px; font-weight: 600; margin-bottom: 20px;">
+                Pertanyaan akan muncul di sini...
+            </div>
+            <div id="options-list" class="options-container">
+                <!-- Pilihan jawaban diisi oleh JavaScript -->
+            </div>
+            <button id="btn-next" onclick="nextQuestion()" disabled>Lanjut</button>
+        </div>
+
+        <!-- 4. HASIL KUIS -->
+        <div id="section-result" class="hidden">
+            <div class="result-card">
+                <h2>Hasil Pengerjaan</h2>
+                <div class="score-display" id="final-score">0</div>
+                <p id="result-summary">Jawaban Benar: 0 | Jawaban Salah: 0</p>
+                
+                <div id="loading-spinner" class="loader hidden"></div>
+                <p id="status-message" style="color: var(--primary); font-weight: 600;"></p>
+                
+                <button onclick="resetApp()">Kembali ke Menu Utama</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // DEKLARASI TAUTAN WEB APP GOOGLE APPS SCRIPT (GAS)
+        // Ganti string di bawah ini dengan URL Web App GAS Anda setelah di-deploy
+        // =========================================================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyyIV9ikgAoE3tKcKrop-egqfhCrHkXxSPnj5S17-DBSv_ZPMjA_qYZrEDXIW2YrXgP7w/exec";
+
+        // Sample Data Soal
+        const sampleQuestions = [
+            {
+                id: 1,
+                question: "Berapakah hasil dari 12 + 15?",
+                options: ["25", "27", "29", "30"],
+                answer: "27"
+            },
+            {
+                id: 2,
+                question: "Ibu kota Indonesia saat ini adalah...",
+                options: ["Bandung", "Surabaya", "Jakarta", "Ibu Kota Nusantara"],
+                answer: "Jakarta"
+            },
+            {
+                id: 3,
+                question: "Planet terdekat dari Matahari adalah...",
+                options: ["Venus", "Bumi", "Merkurius", "Mars"],
+                answer: "Merkurius"
+            },
+            {
+                id: 4,
+                question: "Proses pembuatan makanan pada tumbuhan hijau disebut...",
+                options: ["Respirasi", "Fotosintesis", "Transpirasi", "Oksidasi"],
+                answer: "Fotosintesis"
+            },
+            {
+                id: 5,
+                question: "Unsur kimia dengan simbol 'O' adalah...",
+                options: ["Emas", "Oksigen", "Osmium", "Perak"],
+                answer: "Oksigen"
+            }
+        ];
+
+        // Global State
+        let userData = {
+            name: "",
+            class: ""
+        };
+        let currentMode = "";
+        let currentQuestionIndex = 0;
+        let selectedAnswers = [];
+        let score = 0;
+
+        // DOM Elements
+        const sectionIdentity = document.getElementById('section-identity');
+        const sectionMenu = document.getElementById('section-menu');
+        const sectionQuiz = document.getElementById('section-quiz');
+        const sectionResult = document.getElementById('section-result');
+        const identityForm = document.getElementById('identity-form');
+        const btnNext = document.getElementById('btn-next');
+
+        // Form Identitas Event
+        identityForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            userData.name = document.getElementById('student-name').value.trim();
+            userData.class = document.getElementById('student-class').value.trim();
+
+            if (userData.name && userData.class) {
+                sectionIdentity.classList.add('hidden');
+                sectionMenu.classList.remove('hidden');
+            }
+        });
+
+        // Sync Questions to Database on Init
+        function syncQuestionsToDatabase() {
+            if (!GAS_URL || GAS_URL === "URL_GAS_ANDA_DISINI") return;
+
+            const payload = {
+                action: "syncQuestions",
+                questions: sampleQuestions.map(q => ({
+                    id: q.id,
+                    question: q.question,
+                    optionA: q.options[0] || "",
+                    optionB: q.options[1] || "",
+                    optionC: q.options[2] || "",
+                    optionD: q.options[3] || "",
+                    correctAnswer: q.answer
+                }))
+            };
+
+            fetch(GAS_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error("Error syncing questions:", err));
+        }
+
+        // Mulai Kuis
+        function startQuiz(mode) {
+            currentMode = mode;
+            currentQuestionIndex = 0;
+            selectedAnswers = [];
+            score = 0;
+
+            syncQuestionsToDatabase();
+
+            document.getElementById('quiz-mode-title').innerText = `Mode: ${mode}`;
+            sectionMenu.classList.add('hidden');
+            sectionQuiz.classList.remove('hidden');
+            renderQuestion();
+        }
+
+        // Tampilkan Soal
+        function renderQuestion() {
+            const currentQuestion = sampleQuestions[currentQuestionIndex];
+            document.getElementById('question-progress').innerText = `Soal ${currentQuestionIndex + 1}/${sampleQuestions.length}`;
+            document.getElementById('question-text').innerText = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            
+            const optionsContainer = document.getElementById('options-list');
+            optionsContainer.innerHTML = '';
+            btnNext.disabled = true;
+
+            currentQuestion.options.forEach((opt) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = opt;
+                button.onclick = () => selectOption(opt, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // Pilih Jawaban
+        function selectOption(selectedOpt, element) {
+            const allOptions = document.querySelectorAll('.option-btn');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+
+            selectedAnswers[currentQuestionIndex] = selectedOpt;
+            btnNext.disabled = false;
+        }
+
+        // Soal Berikutnya
+        function nextQuestion() {
+            if (currentQuestionIndex < sampleQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // Selesai Kuis
+        function finishQuiz() {
+            sectionQuiz.classList.add('hidden');
+            sectionResult.classList.remove('hidden');
+
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            sampleQuestions.forEach((q, idx) => {
+                if (selectedAnswers[idx] === q.answer) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            });
+
+            const calculatedScore = Math.round((correctCount / sampleQuestions.length) * 100);
+
+            document.getElementById('final-score').innerText = calculatedScore;
+            document.getElementById('result-summary').innerText = `Jawaban Benar: ${correctCount} | Jawaban Salah: ${wrongCount}`;
+
+            sendDataToGAS(correctCount, wrongCount);
+        }
+
+        // Kirim Hasil ke GAS
+        function sendDataToGAS(correctCount, wrongCount) {
+            const spinner = document.getElementById('loading-spinner');
+            const statusMsg = document.getElementById('status-message');
+
+            if (!GAS_URL || GAS_URL === "URL_GAS_ANDA_DISINI") {
+                statusMsg.innerText = "Catatan: URL Google Apps Script belum dikonfigurasi.";
+                return;
+            }
+
+            spinner.classList.remove('hidden');
+            statusMsg.innerText = "Menyimpan hasil ke Google Sheets...";
+
+            const payload = {
+                action: "submitResult",
+                studentName: userData.name,
+                studentClass: userData.class,
+                correctCount: correctCount,
+                wrongCount: wrongCount,
+                answers: selectedAnswers.map((ans, idx) => ({
+                    questionId: sampleQuestions[idx].id,
+                    userAnswer: ans || "-"
+                }))
+            };
+
+            fetch(GAS_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                spinner.classList.add('hidden');
+                statusMsg.innerText = "Data berhasil disimpan ke spreadsheet!";
+            })
+            .catch(err => {
+                spinner.classList.add('hidden');
+                statusMsg.innerText = "Gagal menyimpan data ke server.";
+                console.error("Error submitting result:", err);
+            });
+        }
+
+        // Reset Aplikasi
+        function resetApp() {
+            sectionResult.classList.add('hidden');
+            sectionMenu.classList.remove('hidden');
+            document.getElementById('status-message').innerText = "";
+        }
+    </script>
+</body>
+</html>
